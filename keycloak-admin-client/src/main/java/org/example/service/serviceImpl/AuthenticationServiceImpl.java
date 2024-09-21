@@ -1,6 +1,7 @@
 package org.example.service.serviceImpl;
 import jakarta.ws.rs.core.Response;
 import org.example.exception.ConflictException;
+import org.example.exception.NotFoundException;
 import org.example.model.dto.request.UserRequest;
 import org.example.model.response.UserResponse;
 import org.example.service.AuthenticationService;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -59,6 +62,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         credentialRepresentation.setValue(password);
         return credentialRepresentation;
     }
+    @Override
+    public List<UserResponse> getAllUsers() {
+        UsersResource usersResource = keycloak.realm(realm).users();
+        List<UserRepresentation> userRepresentations = usersResource.list();
+        return userRepresentations.stream()
+                .map(this::prepareUserResponse)
+                .toList();
+    }
+
+    @Override
+    public UserResponse getUserById(UUID userId) {
+        UsersResource usersResource = keycloak.realm(realm).users();
+        UserRepresentation userRepresentation = usersResource.get(String.valueOf(userId)).toRepresentation();
+        if (userRepresentation == null){
+            throw  new NotFoundException("User not found");
+        }
+        return prepareUserResponse(userRepresentation);
+    }
+
     private UserResponse prepareUserResponse(UserRepresentation userRepresentation) {
         UserResponse userResponse = new UserResponse();
         userResponse.setUserId(UUID.fromString(userRepresentation.getId()));
@@ -70,5 +92,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userResponse.setLastModifiedAt(userRepresentation.getAttributes().get("lastModifiedAt").getFirst());
         return userResponse;
     }
-
 }

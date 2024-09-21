@@ -6,7 +6,7 @@ spring:
           issuer-uri: http://localhost:8080/realms/realm-1
           jwk-set-uri: http://localhost:8080/realms/realm-1/protocol/openid-connect/certs
   application:
-    name: keycloak-client
+    name: keycloak-admin-client
 server:
   port: 8181
 keycloak:
@@ -31,3 +31,9 @@ springdoc:
 logging:
   level:
     org.springframework.web: debug
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
