@@ -81,6 +81,48 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return prepareUserResponse(userRepresentation);
     }
 
+    @Override
+    public UserResponse getUserByEmail(String email) {
+        UsersResource usersResource = keycloak.realm(realm).users();
+        List<UserRepresentation> userRepresentations = usersResource.search(null, null, null, email, null, null);
+        if (userRepresentations.isEmpty()){
+            throw  new NotFoundException("User not found");
+        }
+        UserRepresentation userRepresentation = userRepresentations.getFirst();
+        return prepareUserResponse(userRepresentation);
+    }
+
+    @Override
+    public UserResponse updateUserById(UUID userId, UserRequest userRequest) {
+        UsersResource usersResource = keycloak.realm(realm).users();
+        UserResource userResource = usersResource.get(userId.toString());
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+        if (userRepresentation == null) {
+            throw new NotFoundException("User not found with ID: " + userId);
+        }
+
+        // Update user fields based on the UserRequest
+        userRepresentation.setFirstName(userRequest.getFirstName());
+        userRepresentation.setLastName(userRequest.getLastName());
+        userRepresentation.setEmail(userRequest.getEmail());
+        userRepresentation.setUsername(userRequest.getUsername());
+        userRepresentation.singleAttribute("createdAt", String.valueOf(LocalDateTime.now()));
+        userRepresentation.singleAttribute("lastModifiedAt", String.valueOf(LocalDateTime.now()));
+        userResource.update(userRepresentation);
+        return prepareUserResponse(userRepresentation);
+    }
+
+    @Override
+    public void deleteUserById(UUID userId) {
+        UsersResource usersResource = keycloak.realm(realm).users();
+        UserResource userResource = usersResource.get(userId.toString());
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+        if (userRepresentation == null) {
+            throw new NotFoundException("User not found with ID: " + userId);
+        }
+        userResource.remove();
+    }
+
     private UserResponse prepareUserResponse(UserRepresentation userRepresentation) {
         UserResponse userResponse = new UserResponse();
         userResponse.setUserId(UUID.fromString(userRepresentation.getId()));

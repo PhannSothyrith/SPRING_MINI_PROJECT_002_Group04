@@ -13,4 +13,7 @@ public interface AuthenticationService {
    UserResponse registerUser(UserRequest userRequest);
    List<UserResponse> getAllUsers();
    UserResponse getUserById(UUID userId);
+   UserResponse getUserByEmail(String email);
+   UserResponse updateUserById(UUID userId, UserRequest userRequest);
+   void deleteUserById(UUID userId);
 }
