@@ -13,9 +13,9 @@ spring:
           uri:
             http://localhost:8181
           predicates:
-              - Path=/v3/api-docs/keycloak-admin-client
+              - Path=/v3/api-docs/keycloak-admin-client, api/v1/**
           filters:
-              - RewritePath=/v3/api-docs/keycloak-admin-client,/v3/api-docs
+              - RewritePath=/v3/api-docs/keycloak-admin-client,/v3/api-docs, api/v1/**
 
   main:
     web-application-type: reactive

@@ -84,7 +84,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public UserResponse getUserByEmail(String email) {
         UsersResource usersResource = keycloak.realm(realm).users();
-        List<UserRepresentation> userRepresentations = usersResource.search(null, null, null, email, null, null);
+        List<UserRepresentation> userRepresentations = usersResource.search(email);
         if (userRepresentations.isEmpty()){
             throw  new NotFoundException("User not found");
         }
@@ -121,6 +121,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new NotFoundException("User not found with ID: " + userId);
         }
         userResource.remove();
+    }
+
+    @Override
+    public UserResponse getUserByUsername(String username) {
+        UsersResource usersResource = keycloak.realm(realm).users();
+        List<UserRepresentation> userRepresentations = usersResource.search(username);
+        if (userRepresentations.isEmpty()){
+            throw  new NotFoundException("User not found");
+        }
+        UserRepresentation userRepresentation = userRepresentations.getFirst();
+        return prepareUserResponse(userRepresentation);
     }
 
     private UserResponse prepareUserResponse(UserRepresentation userRepresentation) {

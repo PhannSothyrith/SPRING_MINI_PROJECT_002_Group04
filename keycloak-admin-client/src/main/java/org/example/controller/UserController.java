@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin
-//@SecurityRequirement(name = "realm-2")
+@SecurityRequirement(name = "realm-2")
 @RequestMapping("api/v1/user/users")
 public class UserController {
     private final AuthenticationService authenticationService;
@@ -89,6 +89,17 @@ public class UserController {
         APIResponse<UserResponse> response = APIResponse.<UserResponse>builder()
                .status(HttpStatus.OK)
                .message("User registration")
+               .time(LocalDateTime.now())
+               .build();
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("username/{username}")
+    public ResponseEntity<APIResponse<UserResponse>> getUserByUsername(@PathVariable String username){
+        UserResponse user = authenticationService.getUserByUsername(username);
+        APIResponse<UserResponse> response = APIResponse.<UserResponse>builder()
+               .status(HttpStatus.OK)
+               .message("Get user by username is successfully")
+               .payload(user)
                .time(LocalDateTime.now())
                .build();
         return ResponseEntity.ok(response);

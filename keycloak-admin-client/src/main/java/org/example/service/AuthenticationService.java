@@ -16,4 +16,5 @@ public interface AuthenticationService {
    UserResponse getUserByEmail(String email);
    UserResponse updateUserById(UUID userId, UserRequest userRequest);
    void deleteUserById(UUID userId);
+   UserResponse getUserByUsername(String username);
 }
