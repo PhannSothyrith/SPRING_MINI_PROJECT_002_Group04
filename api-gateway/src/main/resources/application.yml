@@ -16,7 +16,6 @@ spring:
               - Path=/v3/api-docs/keycloak-admin-client, api/v1/**
           filters:
               - RewritePath=/v3/api-docs/keycloak-admin-client,/v3/api-docs, api/v1/**
-
   main:
     web-application-type: reactive
 
