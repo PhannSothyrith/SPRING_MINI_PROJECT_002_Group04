@@ -9,6 +9,7 @@ public class SwaggerConfig {
     @Bean
     public CommandLineRunner openApiGroup(SwaggerUiConfigParameters swaggerUiConfigParameters){
         return args -> {
+            swaggerUiConfigParameters.addGroup("task-service");
             swaggerUiConfigParameters.addGroup("keycloak-admin-client");
         };
     }
