@@ -1,24 +1,5 @@
 spring:
   application:
     name: task-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/db
-    username: postgres
-    password: 123
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-  instance:
-    prefer-ip-address: true
-
-server:
-  port: 8081
+  config:
+    import: configserver:http://localhost:2992

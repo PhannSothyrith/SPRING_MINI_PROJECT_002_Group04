@@ -1,6 +1,6 @@
 services:
   postgres2:
-    image: postgres:16.2
+    image: postgres
     volumes:
       - my_keycloak_volume:/var/lib/postgresql/data
     environment:
@@ -10,7 +10,7 @@ services:
     networks:
       - keycloak_network
   postgres3:
-    image: postgres:16.2
+    image: postgres
     volumes:
       - my_task_volume:/var/lib/postgresql/data
     environment:

@@ -1,3 +1,21 @@
 spring:
- application:
-   name: config-server
+  application:
+    name: config-server
+  ##modify base on your own (delete below)
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/config_mini_project
+    username: postgres
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  ##modify base on your own (delete above)
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/drchhun/config-server-gg
+server:
+  port: 2992
