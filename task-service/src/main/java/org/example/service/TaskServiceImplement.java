@@ -1,8 +1,11 @@
 package org.example.service;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
 import org.example.client.KeycloakClient;
 import org.example.model.Task;
+import org.example.model.response.dto.group.GroupClientRes;
+import org.example.model.response.dto.user.UserKeycloakRes;
 import org.example.model.response.dto.user.UserRes;
 import org.example.model.request.TaskRequest;
 import org.example.repository.TaskRepository;
@@ -16,6 +19,7 @@ public class TaskServiceImplement implements TaskService {
     private final TaskRepository taskRepository;
     private final KeycloakClient keycloakClient;
 
+    @CircuitBreaker(name = "kanyeClient", fallbackMethod = "fallingApartDamn")
     @Override
     public UserRes addTask(TaskRequest request) {
         Task myTask = taskRepository.save(request.toEntity());
@@ -30,6 +34,7 @@ public class TaskServiceImplement implements TaskService {
                 .build();
     }
 
+    @CircuitBreaker(name = "kanyeClient", fallbackMethod = "fallingApartDamn")
     @Override
     public UserRes getTaskById(Long id) {
         Task myTask = taskRepository.findById(id).orElse(null);
@@ -43,6 +48,7 @@ public class TaskServiceImplement implements TaskService {
                 .build();
     }
 
+    @CircuitBreaker(name = "kanyeClient", fallbackMethod = "fallingApartDamnV2")
     @Override
     public Task updateTaskById(Long id, TaskRequest request) {
         Task getTask = taskRepository.findById(id).get();
@@ -54,11 +60,13 @@ public class TaskServiceImplement implements TaskService {
         return taskRepository.save(getTask);
     }
 
+    @CircuitBreaker(name = "kanyeClient", fallbackMethod = "fallingApart")
     @Override
     public void deleteTaskById(Long id) {
         taskRepository.deleteById(id);
     }
 
+    @CircuitBreaker(name = "kanyeClient", fallbackMethod = "fallingApart")
     @Override
     public List<UserRes> getAllTasks() {
         return taskRepository.findAll().stream().map(task ->
@@ -71,5 +79,25 @@ public class TaskServiceImplement implements TaskService {
                     .groupId(keycloakClient.getGroupById(task.getGroupId()).toDamn())
                     .build()
         ).toList();
+    }
+
+    public List<String> fallingApart(Throwable t) {
+        return List.of("Service is busy right now. Please try again later.");
+    }
+
+    public UserRes fallingApartDamn(Throwable t) {
+        return UserRes.builder()
+                .taskId(000L)
+                .taskName("Service is busy.")
+                .description("Service is not available right now. Please try again later.")
+                .build();
+    }
+
+    public Task fallingApartDamnV2(Throwable t) {
+        return Task.builder()
+                .taskId(000L)
+                .taskName("Service is busy.")
+                .description("Service is not available right now. Please try again later.")
+                .build();
     }
 }
