@@ -15,5 +15,5 @@ public class GroupResponse {
     private UUID groupId;
     private String groupName;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<UserResponse> userResponseList;
+    private List<UserResponse> user;
 }

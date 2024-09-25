@@ -1,5 +1,6 @@
 package org.example.service.serviceImpl;
 
+import jakarta.ws.rs.core.Response;
 import org.example.exception.NotFoundException;
 import org.example.model.dto.request.GroupRequest;
 import org.example.model.response.GroupResponse;
@@ -31,19 +32,23 @@ public class GroupServiceImpl implements GroupService {
     }
     @Override
     public GroupResponse createGroup(GroupRequest groupRequest) {
-        try {
-            GroupRepresentation group = new GroupRepresentation();
-            group.setName(groupRequest.getGroupName());
 
-            keycloak.realm(realm).groups().add(group);
+        GroupRepresentation group = new GroupRepresentation();
+        group.setName(groupRequest.getGroupName());
+        Response response = keycloak.realm(realm).groups().add(group);
 
-            GroupResponse groupResponse = GroupResponse.builder()
-                    .groupName(groupRequest.getGroupName())
-                    .build();
-            return groupResponse;
-        } catch (Exception e) {
-            throw new RuntimeException("Fail to create group", e);
-        }
+        List<GroupRepresentation> groupList = keycloak.realm(realm).groups().groups();
+
+       GroupRepresentation createGroup = groupList.stream()
+               .filter(groups -> groupRequest.getGroupName().equals(groups.getName()))
+               .findFirst()
+               .orElseThrow(null);
+
+       GroupResponse groupResponse = GroupResponse.builder()
+               .groupId(UUID.fromString(createGroup.getId()))
+               .groupName(groupRequest.getGroupName())
+               .build();
+       return groupResponse;
     }
 
     @Override
@@ -64,6 +69,10 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public GroupResponse getGroupById(UUID id) {
         GroupResource groupResource = keycloak.realm(realm).groups().group(id.toString());
+
+        if (groupResource == null || groupResource.toRepresentation() == null) {
+            throw new NotFoundException("Group with id " + id + " doesn't exist.");
+        }
         GroupRepresentation groupRepresentation = groupResource.toRepresentation();
 
         return prepareGroupResponse(groupRepresentation);
@@ -75,7 +84,7 @@ public class GroupServiceImpl implements GroupService {
         GroupRepresentation groupRepresentation = groupResource.toRepresentation();
 
         if (groupRepresentation == null) {
-            throw new NotFoundException("Group not found with ID: " + id);
+            throw new NotFoundException("Group not found with id " + id);
         }
 
         groupRepresentation.setName(groupRequest.getGroupName());
@@ -88,14 +97,14 @@ public class GroupServiceImpl implements GroupService {
         GroupResource groupResource = keycloak.realm(realm).groups().group(id.toString());
         GroupRepresentation groupRepresentation = groupResource.toRepresentation();
         if (groupRepresentation == null) {
-            throw new NotFoundException("Group not found with ID: " + id);
+            throw new NotFoundException("Group not found with id " + id);
         }
         groupResource.remove();
     }
 
     @Override
     public GroupResponse addUserToGroup(UUID userId, UUID groupId) {
-        try {
+
             GroupRepresentation groupRepresentation = keycloak.realm(realm).groups().group(groupId.toString()).toRepresentation();
             UserResource userResource = keycloak.realm(realm).users().get(userId.toString());
             UserRepresentation userRepresentation = userResource.toRepresentation();
@@ -118,12 +127,8 @@ public class GroupServiceImpl implements GroupService {
             return GroupResponse.builder()
                     .groupId(UUID.fromString(groupRepresentation.getId()))
                     .groupName(groupRepresentation.getName())
-                    .userResponseList(userResponseList)
+                    .user(userResponseList)
                     .build();
-        }
-        catch (Exception e) {
-            throw new RuntimeException("Failed to add user to group", e);
-        }
     }
 
     @Override
@@ -143,7 +148,7 @@ public class GroupServiceImpl implements GroupService {
         GroupResponse groupResponse = GroupResponse.builder()
                 .groupId(UUID.fromString(groupRepresentation.getId()))
                 .groupName(groupRepresentation.getName())
-                .userResponseList(userResponse)
+                .user(userResponse)
                 .build();
         return groupResponse;
     }
