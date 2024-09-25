@@ -26,7 +26,7 @@ public class TaskServiceImplement implements TaskService {
                 .description(myTask.getDescription())
                 .createdBy(keycloakClient.getUserById(request.getCreatedBy()).toRes())
                 .assignedTo(keycloakClient.getUserById(request.getAssignedTo()).toRes())
-                .groupId(myTask.getGroupId())
+                .groupId(keycloakClient.getGroupById(request.getGroupId()).toDamn())
                 .build();
     }
 

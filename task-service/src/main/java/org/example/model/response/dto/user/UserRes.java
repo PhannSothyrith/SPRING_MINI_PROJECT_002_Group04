@@ -3,6 +3,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.model.response.dto.group.GroupClientRes;
 
 import java.util.UUID;
 
@@ -16,5 +17,5 @@ public class UserRes {
     private String description;
     private UserKeycloakRes createdBy;
     private UserKeycloakRes assignedTo;
-    private UUID groupId;
+    private GroupClientRes groupId;
 }
