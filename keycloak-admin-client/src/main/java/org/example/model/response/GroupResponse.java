@@ -14,7 +14,6 @@ import java.util.UUID;
 public class GroupResponse {
     private UUID groupId;
     private String groupName;
-    //private UserResponse user;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<UserResponse> userResponseList;
 }

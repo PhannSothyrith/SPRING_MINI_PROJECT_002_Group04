@@ -102,11 +102,6 @@ public class GroupServiceImpl implements GroupService {
 
             userResource.joinGroup(groupId.toString());
 
-//            GroupResponse groupResponse = GroupResponse.builder()
-//                    .groupId(UUID.fromString(groupRepresentation.getId()))
-//                    .groupName(groupRepresentation.getName())
-//                    .build();
-
             UserResponse userResponse = UserResponse.builder()
                     .userId(UUID.fromString(userRepresentation.getId()))
                     .userName(userRepresentation.getUsername())

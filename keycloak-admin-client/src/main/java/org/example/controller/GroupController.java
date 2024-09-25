@@ -40,7 +40,7 @@ public class GroupController {
         List<GroupResponse> response = groupService.getAllGroup();
         APIResponse<List<GroupResponse>> apiResponse = APIResponse.<List<GroupResponse>>builder()
                 .status(HttpStatus.OK)
-                .message("Get all group successfully")
+                .message("Get all groups successfully")
                 .payload(response)
                 .build();
         return ResponseEntity.ok(apiResponse);
@@ -84,7 +84,7 @@ public class GroupController {
         GroupResponse response = groupService.addUserToGroup(userId, groupId);
         APIResponse<GroupResponse> apiResponse = APIResponse.<GroupResponse>builder()
                 .status(HttpStatus.CREATED)
-                .message("Add User to Group successfully.")
+                .message("Add User to Group with id " + groupId + " successfully.")
                 .payload(response)
                 .time(LocalDateTime.now())
                 .build();
@@ -96,7 +96,7 @@ public class GroupController {
         GroupResponse response = groupService.getUsersInGroup(groupId);
         APIResponse<GroupResponse> apiResponse = APIResponse.<GroupResponse>builder()
                 .status(HttpStatus.OK)
-                .message("Get users in group successfully.")
+                .message("Get users in group with id " + groupId + " successfully.")
                 .payload(response)
                 .time(LocalDateTime.now())
                 .build();
