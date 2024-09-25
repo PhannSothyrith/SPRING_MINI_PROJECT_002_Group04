@@ -4,17 +4,8 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-repositories {
-    mavenCentral()
+ext {
+    springCloudVersion = "2023.0.3"
 }
 
 configurations {
@@ -23,26 +14,37 @@ configurations {
     }
 }
 
-ext {
-    set('springCloudVersion', "2023.0.3")
-}
-
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
+
+allprojects {
+    group = 'com.config'
+    version = '0.0.1-SNAPSHOT'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+
 subprojects {
-    apply plugin : 'java'
-    apply plugin : 'org.springframework.boot'
-    apply plugin : 'io.spring.dependency-management'
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    ext {
+        springCloudVersion = "2023.0.3"
+    }
 
     configurations {
         compileOnly {
@@ -50,27 +52,75 @@ subprojects {
         }
     }
     dependencies {
-        implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-        compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
-        implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-        if (!project.name.contains("api-gateway") && !project.name.contains("eureka-server") && !project.name.contains("keycloak")) {
+        if (!project.name.contains("eureka-server") && !project.name.contains("config-server") && !project.name.contains("api-gateway")){
+            implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
             implementation 'org.springframework.boot:spring-boot-starter-web'
+            implementation 'org.springframework.cloud:spring-cloud-starter-config'
+            implementation 'org.projectlombok:lombok'
+            annotationProcessor 'org.projectlombok:lombok'
+            implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+            implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+            implementation 'org.springframework.boot:spring-boot-starter-actuator'
+            implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+            implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+            implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+            implementation 'org.keycloak:keycloak-spring-boot-starter:24.0.1'
+            implementation 'org.keycloak:keycloak-admin-client:24.0.1'
+            implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+        }
+        if (!project.name.contains("eureka-server") && !project.name.contains("config-server") && !project.name.contains("api-gateway") && !project.name.contains("keycloak-admin-client")){
             implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
             runtimeOnly 'org.postgresql:postgresql'
         }
+        if (project.name=="config-server"){
+            implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+            runtimeOnly 'org.postgresql:postgresql'
+        }
+        if(project.name.contains("api-gateway")){
+            implementation 'org.springframework.cloud:spring-cloud-starter-config'
+            implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+            implementation 'org.springframework.boot:spring-boot-starter-webflux'
+            implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0'
+            implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+        }
+        if (project.name.contains("eureka-server")){
+            implementation 'org.springframework.cloud:spring-cloud-starter-config'
+            implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+        }
+        if (project.name.contains("config-server")){
+            implementation 'org.springframework.cloud:spring-cloud-config-server'
+        }
+        if (project.name.contains("keycloak-admin-client")){
+            implementation 'org.springframework.cloud:spring-cloud-starter-config'
+            implementation 'org.springframework.boot:spring-boot-starter-web'
+            implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+            implementation 'org.keycloak:keycloak-spring-boot-starter:24.0.1'
+            implementation 'org.keycloak:keycloak-admin-client:24.0.1'
+            implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+        }
+        if (project.name == "task-service") {
+            implementation 'org.springframework.cloud:spring-cloud-starter-config'
+            implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+            implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        }
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
+
     dependencyManagement {
         imports {
-            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
         }
     }
 
 }
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+}
 
-tasks.named('test') {
-    useJUnitPlatform()
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+    }
 }
