@@ -31,8 +31,16 @@ public class TaskServiceImplement implements TaskService {
     }
 
     @Override
-    public Task getTaskById(Long id) {
-        return taskRepository.findById(id).orElse(null);
+    public UserRes getTaskById(Long id) {
+        Task myTask = taskRepository.findById(id).orElse(null);
+        return UserRes.builder()
+                .taskId(myTask.getTaskId())
+                .taskName(myTask.getTaskName())
+                .description(myTask.getDescription())
+                .createdBy(keycloakClient.getUserById(myTask.getCreatedBy()).toRes())
+                .assignedTo(keycloakClient.getUserById(myTask.getAssignedTo()).toRes())
+                .groupId(keycloakClient.getGroupById(myTask.getGroupId()).toDamn())
+                .build();
     }
 
     @Override
@@ -52,7 +60,16 @@ public class TaskServiceImplement implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<UserRes> getAllTasks() {
+        return taskRepository.findAll().stream().map(task ->
+            UserRes.builder()
+                    .taskId(task.getTaskId())
+                    .taskName(task.getTaskName())
+                    .description(task.getDescription())
+                    .createdBy(keycloakClient.getUserById(task.getCreatedBy()).toRes())
+                    .assignedTo(keycloakClient.getUserById(task.getAssignedTo()).toRes())
+                    .groupId(keycloakClient.getGroupById(task.getGroupId()).toDamn())
+                    .build()
+        ).toList();
     }
 }
