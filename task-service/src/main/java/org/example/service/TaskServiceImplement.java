@@ -1,7 +1,9 @@
 package org.example.service;
 
 import lombok.AllArgsConstructor;
+import org.example.client.KeycloakClient;
 import org.example.model.Task;
+import org.example.model.response.dto.user.UserRes;
 import org.example.model.request.TaskRequest;
 import org.example.repository.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -12,10 +14,20 @@ import java.util.List;
 @AllArgsConstructor
 public class TaskServiceImplement implements TaskService {
     private final TaskRepository taskRepository;
+    private final KeycloakClient keycloakClient;
 
     @Override
-    public Task addTask(TaskRequest request) {
-        return taskRepository.save(request.toEntity());
+    public UserRes addTask(TaskRequest request) {
+        Task myTask = taskRepository.save(request.toEntity());
+        keycloakClient.getUserById(request.getCreatedBy());
+        return UserRes.builder()
+                .taskId(myTask.getTaskId())
+                .taskName(myTask.getTaskName())
+                .description(myTask.getDescription())
+                .createdBy(keycloakClient.getUserById(request.getCreatedBy()).toRes())
+                .assignedTo(keycloakClient.getUserById(request.getAssignedTo()).toRes())
+                .groupId(myTask.getGroupId())
+                .build();
     }
 
     @Override

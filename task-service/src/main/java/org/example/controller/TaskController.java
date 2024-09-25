@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.example.model.request.TaskRequest;
 import org.example.model.response.APIResponse;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/v1/tasks")
+@SecurityRequirement(name = "realm-2")
 public class TaskController {
 
     private final TaskService taskService;

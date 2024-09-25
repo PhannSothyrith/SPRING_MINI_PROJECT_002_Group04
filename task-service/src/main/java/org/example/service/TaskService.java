@@ -1,12 +1,13 @@
 package org.example.service;
 
 import org.example.model.Task;
+import org.example.model.response.dto.user.UserRes;
 import org.example.model.request.TaskRequest;
 
 import java.util.List;
 
 public interface TaskService {
-    Task addTask(TaskRequest request);
+    UserRes addTask(TaskRequest request);
 
     Task getTaskById(Long id);
 
