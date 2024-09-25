@@ -18,14 +18,14 @@ keycloak:
     username: 'Viseth'
     password: 'Vi-222777'
     client-id: client11
-    secret: 6scaeZzZ24UTDFDTPqrche49u8ud5GPP
+    secret: EDhnPvkfPRvkBJyejob0rtYlOIn0afh6
     provider: secret
 #config swagger
 springdoc:
   swagger-ui:
     oauth:
       client-id: client11
-      client-secret: 6scaeZzZ24UTDFDTPqrche49u8ud5GPP
+      client-secret: EDhnPvkfPRvkBJyejob0rtYlOIn0afh6
       realm: realm-2
     tags-sorter: alpha
 logging:
